@@ -9,9 +9,9 @@ A amostragem é por CICLONE (ID), não por imagem solta: assim as sequências te
 selecionadas mantêm a ordem original. Cada arquivo recebe ~`frac` das suas imagens.
 
 Uso:
-    python cortar_dataset.py                       # data/ -> data/20percent/
-    python cortar_dataset.py --frac 0.2 --seed 0 --compressao 4
-    python cortar_dataset.py --compressao 0        # sem gzip (arquivos ocupam ~20% do original em disco)
+    python scripts/dados/cortar_dataset.py                       # data/ -> data/20percent/
+    python scripts/dados/cortar_dataset.py --frac 0.2 --seed 0 --compressao 4
+    python scripts/dados/cortar_dataset.py --compressao 0        # sem gzip (arquivos ocupam ~20% do original em disco)
 """
 import argparse
 import io
@@ -114,7 +114,7 @@ def cortar(origem: Path, destino: Path, frac: float, seed: int, compressao: int,
 
 def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--origem", type=Path, default=Path(__file__).parent / "data")
+    ap.add_argument("--origem", type=Path, default=Path(__file__).resolve().parents[2] / "data")  # <raiz do projeto>/data (este arquivo fica em scripts/dados/)
     ap.add_argument("--destino", type=Path, default=None, help="padrão: <origem>/20percent")
     ap.add_argument("--frac", type=float, default=0.20)
     ap.add_argument("--seed", type=int, default=0)

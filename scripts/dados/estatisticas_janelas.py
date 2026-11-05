@@ -38,9 +38,9 @@ definição de pixel inválido é a do notebook: NaN, infinito ou > 1000.
 
 USO
 ---
-    python3 estatisticas_janelas.py                       # usa ./data
-    python3 estatisticas_janelas.py --dir-dados /caminho/data --saida resultados_janelas
-    python3 estatisticas_janelas.py --refazer-varredura   # ignora o cache da fração de IR ausente
+    python3 scripts/dados/estatisticas_janelas.py                       # usa <raiz do projeto>/data
+    python3 scripts/dados/estatisticas_janelas.py --dir-dados /caminho/data --saida resultados_janelas
+    python3 scripts/dados/estatisticas_janelas.py --refazer-varredura   # ignora o cache da fração de IR ausente
 
 SAÍDAS (em ``resultados_janelas/``)
 -----------------------------------
@@ -390,10 +390,10 @@ def relatorio_md(r: dict) -> str:
 
 
 def main() -> None:
-    aqui = Path(__file__).resolve().parent
+    raiz_projeto = Path(__file__).resolve().parents[2]   # este arquivo fica em scripts/dados/
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[1])
-    ap.add_argument("--dir-dados", type=Path, default=aqui / "data")
-    ap.add_argument("--saida", type=Path, default=aqui / "resultados_janelas")
+    ap.add_argument("--dir-dados", type=Path, default=raiz_projeto / "data")
+    ap.add_argument("--saida", type=Path, default=raiz_projeto / "resultados_janelas")
     ap.add_argument("--refazer-varredura", action="store_true", help="ignora o cache da fração de IR inválido")
     a = ap.parse_args()
 

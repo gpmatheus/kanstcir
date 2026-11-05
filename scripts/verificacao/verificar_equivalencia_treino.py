@@ -10,7 +10,7 @@ compara, definição por definição, a ÁRVORE SINTÁTICA (ignora comentários 
 termina com código 1 se achar uma diferença que não esteja declarada abaixo.
 
 Uso (não executa nada do notebook nem do script: só lê os dois como texto/JSON):
-    python3 -I verificar_equivalencia_treino.py [--notebook pipeline_tc_kaggle.ipynb] [--script treinar_remoto.py]
+    python3 -I scripts/verificacao/verificar_equivalencia_treino.py [--notebook pipeline_tc_kaggle.ipynb] [--script scripts/treino/treinar_remoto.py]
 
 Rode depois de qualquer alteração em um dos dois arquivos. Se uma diferença nova for intencional, mude os dois lados ou
 declare-a em DIFERENCAS_DECLARADAS (com o motivo).
@@ -70,10 +70,10 @@ def sem_docstring(corpo: List[ast.stmt]) -> List[ast.stmt]:
 
 
 def main() -> int:
-    raiz = Path(__file__).resolve().parent
+    raiz = Path(__file__).resolve().parents[2]   # raiz do projeto (este arquivo fica em scripts/verificacao/)
     p = argparse.ArgumentParser(description=__doc__.split("\n\n")[0])
     p.add_argument("--notebook", default=str(raiz / "pipeline_tc_kaggle.ipynb"))
-    p.add_argument("--script", default=str(raiz / "treinar_remoto.py"))
+    p.add_argument("--script", default=str(raiz / "scripts" / "treino" / "treinar_remoto.py"))
     args = p.parse_args()
 
     defs_nb, bloco_teste_nb = codigo_do_notebook(Path(args.notebook))

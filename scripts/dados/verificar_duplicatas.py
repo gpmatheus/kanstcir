@@ -50,9 +50,9 @@ SAÍDAS (pasta ``--saida``, padrão ``resultados_duplicatas/``)
 
 USO
 ---
-  python verificar_duplicatas.py --dados data/                     # rápido (metadados + pixels dos candidatos)
-  python verificar_duplicatas.py --dados data/ --varrer-imagens    # + hash de todas as imagens
-  python verificar_duplicatas.py --help
+  python scripts/dados/verificar_duplicatas.py --dados data/                     # rápido (metadados + pixels dos candidatos)
+  python scripts/dados/verificar_duplicatas.py --dados data/ --varrer-imagens    # + hash de todas as imagens
+  python scripts/dados/verificar_duplicatas.py --help
 """
 
 from __future__ import annotations

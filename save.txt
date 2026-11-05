@@ -1,0 +1,78 @@
+O que foi feito
+
+- O zip estava íntegro e sem caminhos suspeitos. Está em resultados_pipeline/ (notebook executado e saida_pipeline/), e adicionei o zip e as pastas novas ao .gitignore.
+- Criei analisar_resultados_pipeline.py, que gera resultados_analise_pipeline/ com relatorio_analise.md, 18 tabelas e 4 figuras. Ele só aceita as predições se elas baterem com as janelas reconstruídas: as 100 execuções conferem, as métricas são idênticas às do notebook e o bootstrap replica até 1e-9.
+- Registrei tudo no CLAUDE.md (seções 9.5 a 9.10, itens 15 a 17 da seção 12) e na memória.
+
+A execução
+
+Foram 100 treinos em 6,55 h na T4, nenhum pendente, com 65.670 janelas de 1.373 ciclones. Reproduz a 1ª execução: RMSE de Vmax 9,60 contra 9,58.
+
+O que os resultados dizem
+
+- LSTM: ajuda muito (−1,72 nó, −15%, em 5 de 5 folds).
+- KAN × MLP: empate em Vmax. Em ΔVmax a vantagem é de 0,13 nó e frágil: com o ensemble de seeds deixa de ser significativa. Não dá para escrever "KAN melhor".
+- Multitarefa: piora o Vmax em 0,11 nó (a só-Vmax vence em 5 de 5 folds, 9,49 contra 9,60). Isso derruba a motivação da seção 6.5.
+- ΔVmax: um modelo único empata com o baseline de histórico (15,80 contra 15,72). O ensemble de 5 seeds vence (15,13). Em RI, o ensemble tem AUC/AP de 0,842/0,321 contra 0,799/0,233 do histórico.
+- Histórico como entrada: somar a previsão da rede às features do histórico leva o RMSE de ΔVmax a 14,58 (14,35 com ensemble) e a AUC de RI a 0,85–0,86. Imagens e histórico se complementam, então recomendo testar o histórico como entrada.
+- Sobreajuste: o erro de treino é pelo menos 34% menor que o de validação (variante só-Vmax). Além disso, 15 das 75 execuções com LSTM pararam cedo por early stopping.
+- KAN: sem esparsidade (103 de 128 variáveis efetivas) e com splines quase monótonas.
+- Grad-CAM: difuso e sem teste de sanidade.
+
+A faixa horizontal
+
+É um único ciclone, o 201407E, mas a causa não é o recorte cruzar a emenda ±180°. A longitude gravada no TCIR nunca passa de −179,8° e volta a crescer, como se o sinal estivesse trocado depois da linha de data.
+
+O recorte fica centrado 2·(180−|lon|)° fora do ciclone, e nos quadros o ciclone aparece exatamente onde essa hipótese prevê, até sair da imagem.
+
+São 48 janelas (0,07%), que respondem por 3,7% do erro quadrático. Sem elas o RMSE cai de 9,60 para 9,45 e nenhum veredito estatístico muda. Outros 62 ciclones perto da linha de data estão normais. O recorte não tem como ser corrigido, porque o ciclone nem está nos pixels.
+
+Decisões suas
+
+Cada item tem recomendação no CLAUDE.md. As principais:
+- Item 12: testar o histórico como entrada, ao menos como ablação.
+- Item 16: as 48 janelas do 201407E. Recomendo relatar com a sensibilidade agora e filtrar só na próxima execução completa.
+- Itens 10 e 11: o que fazer com a multitarefa.
+- Item 15: reportar o ensemble de seeds.
+- Item 17: gravar o RMSE de treino em modo de avaliação.
+
+Ressalvas
+
+- A causa do 201407E vem dos quadros e da trilha, e não conferi com a longitude original.
+- O empilhamento é exploratório e tem um vazamento leve. Ele não substitui treinar com o histórico como entrada.
+- O 200310E é um segundo candidato à mesma troca de sinal e ficou inconclusivo.
+- O __notebook__.ipynb que veio no zip é a versão antiga importada no Kaggle e tem 6 menções a "orientador". Não alterei o arquivo (só li como JSON), e a pasta é ignorada pelo git. Vale reimportar o notebook limpo no Kaggle.
+
+Nada foi commitado. Há .claude/CLAUDE.md e .gitignore modificados e analisar_resultados_pipeline.py novo.
+
+✻ Cooked for 36m 37s · done 13:49
+
+※ recap: The goal is a paper on cyclone intensity with a CNN, LSTM and KAN model, and the full Kaggle run is now analyzed and recorded. Next, you decide whether to add past Vmax as a model input. (disable recaps in /config)
+Referenced file .claude/CLAUDE.md
+Read ../../../../.claude/projects/-Users-matheussonego-Documents-Unipampa-postcc-projetopos/memory/feedback-claude-md-sem-origem.md (26 lines)
+Read ../../../../.claude/projects/-Users-matheussonego-Documents-Unipampa-postcc-projetopos/memory/project-tc-pipeline.md (36 lines)
+Referenced file analisar_resultados_pipeline.py
+Referenced file resultados_analise_pipeline/relatorio_analise.md
+
+⏺ Compacted while idle, before the prompt cache expired
+
+
+
+---------------------------------------------
+
+
+Por favor, rode este comando aqui no prompt (o ! executa direto na sua sessão). Ele só apaga arquivos temporários meus na pasta de rascunho da sessão (saídas de teste, o ambiente com PyTorch e o data_full, que são só links simbólicos); não toca nos seus dados, no data/ nem no projeto:
+
+! rm -rf /private/tmp/claude-501/-Users-matheussonego-Documents-Unipampa-postcc-projetopos/0601ff61-d3f3-47be-a2bf-3f16eb2b6aaf/scratchpad/{replay,replay2,replay3,replayA,replayB,exec_orig/saida,exec_rapido/saida,venv}
+
+Depois me avise e eu continuo.
+
+Onde estou: o notebook rápido já está montado e testado até aqui.
+- Treino idêntico ao original: em CPU, com a mesma seed, as 8 execuções do rápido saíram bit a bit iguais às do notebook original (predições, rótulos, perda, taxa de aprendizado e assinatura).
+- Dados reais: reaproveitando as predições da 2ª execução, a análise inteira (tabelas, estatística, Grad-CAM, KAN e as figuras novas) rodou em ~90 s sem erro. Os números da seed 0 batem com os da 2ª execução.
+- O que falta:
+  - testar o caminho com várias seeds (SEED = (0, 1)), que foi o que estava rodando quando o disco encheu;
+  - gravar o arquivo final na raiz do projeto;
+  - atualizar o CLAUDE.md e a memória.
+
+Se preferir não reinstalar o PyTorch para esse último teste, posso pular o ambiente de teste e fechar só com o que já foi verificado, dizendo claramente o que ficou sem teste.
